@@ -1,0 +1,42 @@
+FROM centos:7
+
+RUN yum update -y 
+RUN yum install -y curl vim git
+# docker
+RUN yum remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-selinux \
+                  docker-engine-selinux \
+                  docker-engine
+
+RUN yum install -y yum-utils \
+    device-mapper-persistent-data \
+    lvm2
+RUN yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+RUN yum install -y docker-ce
+# byobu
+RUN yum -y install epel-release
+RUN yum install -y byobu
+# zsh
+RUN yum install -y zsh
+# oh-my-zsh
+RUN sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+# sudo
+RUN yum install -y sudo
+
+# if you want to add some package after this
+# before are cached
+
+# database clients
+RUN yum install -y redis mysql mongodb
+
+# start
+ADD ./centos_startup.sh /
+CMD sudo sh /centos_startup.sh
